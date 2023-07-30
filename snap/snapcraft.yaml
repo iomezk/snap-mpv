@@ -1,0 +1,197 @@
+name: mpv-wayland
+version: '0.36.0-core22'
+summary: mpv mediaplayer snap with a main focus on Wayland support
+description: |
+  Configuration files can be placed under /home/$USER/snap/mpv-wayland/common/.config/mpv/ directory.  
+  YouTube should work out of the box.
+
+  ___
+  Allow access to /media, /run/media and /mnt:
+
+  snap connect mpv-wayland:removable-media
+source-code: https://github.com/iomezk/snap-mpv
+license: GPL-2.0+
+base: core22
+confinement: strict
+grade: stable
+icon: icon.svg
+
+apps:
+  mpv-wayland:
+    command-chain:
+    - wrapper
+    command: bin/mpv
+    plugs:
+    - audio-playback
+    - home
+    - network
+    - opengl
+    - removable-media
+    - wayland
+  yt-dlp:
+    command-chain:
+    - wrapper
+    command: bin/yt-dlp
+    plugs:
+    - audio-playback
+    - home
+    - network
+    - opengl
+    - removable-media
+    - wayland
+
+environment:
+  HOME: $SNAP_USER_COMMON
+  PATH: $SNAP/bin:$PATH
+  LD_LIBRARY_PATH: $SNAP/gui-lib/usr/lib:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio:$SNAP/lib
+  XKB_CONFIG_ROOT: $SNAP/gui-lib/usr/share/X11/xkb
+  __EGL_VENDOR_LIBRARY_DIRS: $SNAP/gui-lib/usr/share/glvnd/egl_vendor.d
+  LIBGL_DRIVERS_PATH: $SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/dri
+  LIBVA_DRIVERS_PATH: $SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/dri
+  MESA_SHADER_CACHE_DISABLE: "true"
+  FONTCONFIG_PATH: $SNAP/gui-lib/etc/fonts
+  FONTCONFIG_FILE: $SNAP/etc/fonts/fonts.conf
+  PYTHONPATH: $SNAP/lib/python3.10/site-packages
+
+plugs:
+  gnome-42-2204:
+    interface: content
+    default-provider: gnome-42-2204
+    target: $SNAP/gui-lib
+
+layout:
+  /usr/share/font1:
+    symlink: $SNAP/gui-lib/usr/share/fonts
+
+parts:
+  local:
+    source: snap/local/
+    source-type: local
+    plugin: dump
+    prime:
+    - -patches/
+  meson-deps:
+    plugin: nil
+    override-build: |
+      pip install meson
+    build-packages:
+    - python3-pip
+    - ninja-build
+  mpv:
+    after:
+    - local
+    - meson-deps
+    source: https://github.com/mpv-player/mpv/archive/v0.36.0.tar.gz
+    source-checksum: sha256/29abc44f8ebee013bb2f9fe14d80b30db19b534c679056e4851ceadf5a5e8bf6
+    source-type: tar
+    plugin: meson
+    meson-parameters:
+    - --buildtype=release
+    - --strip
+    - --prefix=/
+    - -Dbuild-date=false
+    - -Dlua=enabled
+    - -Dpulse=enabled
+    - -Ddrm=enabled
+    - -Degl=enabled
+    - -Degl-wayland=enabled
+    - -Dwayland=enabled
+    - -Dvaapi-drm=disabled
+    - -Dvaapi-wayland=enabled
+    - -Dvaapi-x11=disabled
+    - -Dx11=disabled
+    - -Dmanpage-build=disabled
+    override-pull: |
+      craftctl default
+      patch -p1 -i ../../local/src/patches/mpv-hwdec-enable.patch
+    build-packages:
+    - patch
+    - pkg-config
+    - libavfilter-dev
+    - libass-dev
+    - libpulse-dev
+    - libdrm-dev
+    - libwayland-dev
+    - wayland-protocols
+    - libxkbcommon-dev
+    - libegl1-mesa-dev
+    - libva-dev
+    - liblua5.2-dev
+    stage-packages:
+    - libavfilter7
+    - liblua5.2-0
+    organize:
+      etc/: share/  # hide etc/
+      '**/lib*.so*': lib/
+    prime:
+    - -share
+    - -usr
+    # subdirs:
+    - -lib/libpixbufloader*
+    - -lib/libmfx_*
+    - -lib/libmfx-*
+    - -lib/libmfxhw*
+    - -lib/libvdpau_*
+    # library linter:
+    - -lib/libdeflate*
+    - -lib/libjbig*
+    - -lib/libflite_cmu_grapheme*
+    - -lib/libflite_cmu_indic*
+    - -lib/libflite_cmu_time*
+    - -lib/libicu*
+    - -lib/liblua*-c++*
+    - -lib/libsphinxad*
+    - -lib/libtiff*
+    - -lib/libtheora*
+    - -lib/libzvbi-chains*
+    # comm -12 <(find /snap/gnome-42-2204/current/ ! -type d -printf '%f\n' | sort -u) <(find /snap/mpv-wayland/current/ ! -type d -printf '%f\n' | sort -u)
+    - -lib/libFLAC*
+    - -lib/libX*
+    - -lib/libasound*
+    - -lib/libasyncns*
+    - -lib/libcairo*
+    - -lib/libdatrie*
+    - -lib/libfontconfig*
+    - -lib/libfribidi*
+    - -lib/libgdk*
+    - -lib/libgomp*
+    - -lib/libgraphite*
+    - -lib/libharfbuzz*
+    - -lib/libjpeg*
+    - -lib/libmp3lame*
+    - -lib/libmpg123*
+    - -lib/libogg*
+    - -lib/libopenjp*
+    - -lib/libopus*
+    - -lib/libpango*
+    - -lib/libpixman*
+    - -lib/libpulse*
+    - -lib/libquadmath*
+    - -lib/librsvg*
+    - -lib/libsamplerate*
+    - -lib/libsndfile*
+    - -lib/libspeex*
+    - -lib/libthai*
+    - -lib/libtwolame*
+    - -lib/libva*
+    - -lib/libvorbis*
+    - -lib/libvpx*
+    - -lib/libwebp*
+    - -lib/libxcb*
+    - -lib/libxml2*
+  yt-dlp:
+    source: https://github.com/yt-dlp/yt-dlp.git
+    source-commit: 6014355c6142f68e20c8374e3787e5b5820f19e2
+    source-type: git
+    source-depth: 1
+    plugin: python
+    override-build: |
+      craftctl default
+      cd "$CRAFT_PART_INSTALL"/lib/python*/site-packages
+      IFS=$(printf '\t') find yt_dlp -name '*.pyc' | sed -r \
+       's/.*/\0\t\0/; s#/__pycache__/#/#; s/.cpython-[0-9]+.pyc\t/.pyc\t/' | while read -r D S; do
+        mv "$S" "$D"
+      done
+    prime:
+    - bin/yt-dlp
+    - lib/python*/site-packages/yt_dlp/**/*.pyc
