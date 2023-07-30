@@ -189,7 +189,7 @@ parts:
       craftctl default
       cd "$CRAFT_PART_INSTALL"/lib/python*/site-packages
       IFS=$(printf '\t') find yt_dlp -name '*.pyc' | sed -r \
-       's/.*/\0\t\0/; s#/__pycache__/#/#; s/.cpython-[0-9]+.pyc\t/.pyc\t/' | while read -r D S; do
+       's/.*/\0\t\0/; s#/__pycache__/#/#; s/\.cpython-[0-9]+\.pyc\t/.pyc\t/' | while read -r D S; do
         mv "$S" "$D"
       done
     prime:
