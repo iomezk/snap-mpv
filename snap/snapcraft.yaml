@@ -1,5 +1,5 @@
 name: mpv-wayland
-version: '0.36.0-core22'
+version: '0.36.0-0'
 summary: mpv mediaplayer snap with a main focus on Wayland support
 description: |
   Configuration files can be placed under /home/$USER/snap/mpv-wayland/common/.config/mpv/ directory.  
@@ -177,7 +177,7 @@ parts:
     - -lib/libxml2*
   yt-dlp:
     source: https://github.com/yt-dlp/yt-dlp.git
-    source-commit: 6014355c6142f68e20c8374e3787e5b5820f19e2
+    source-commit: eda0e415d26eb084e570cf5372d38ee1f616b70f
     source-type: git
     source-depth: 1
     plugin: python
