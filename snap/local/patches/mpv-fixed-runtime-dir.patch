@@ -1,0 +1,24 @@
+--- a/player/main.c
++++ b/player/main.c
+@@ -17,6 +17,7 @@
+ 
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <unistd.h>
+ #include <stdbool.h>
+ #include <math.h>
+ #include <assert.h>
+@@ -426,6 +427,13 @@
+ 
+ int mpv_main(int argc, char *argv[])
+ {
++    uid_t uid = getuid();
++    if (uid >= 0 && uid < 100000) {
++        char runtime_dir[16];
++        snprintf(runtime_dir, sizeof(runtime_dir), "/run/user/%d", uid);
++        setenv("XDG_RUNTIME_DIR", runtime_dir, 1);
++    }
++
+     struct MPContext *mpctx = mp_create();
+     if (!mpctx)
+         return 1;

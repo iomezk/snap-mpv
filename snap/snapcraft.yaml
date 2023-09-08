@@ -18,8 +18,6 @@ icon: icon.svg
 
 apps:
   mpv-wayland:
-    command-chain:
-    - wrapper
     command: bin/mpv
     plugs:
     - audio-playback
@@ -29,8 +27,6 @@ apps:
     - removable-media
     - wayland
   yt-dlp:
-    command-chain:
-    - wrapper
     command: bin/yt-dlp
     plugs:
     - audio-playback
@@ -79,7 +75,6 @@ parts:
     - ninja-build
   mpv:
     after:
-    - local
     - meson-deps
     source: https://github.com/mpv-player/mpv/archive/v0.36.0.tar.gz
     source-checksum: sha256/29abc44f8ebee013bb2f9fe14d80b30db19b534c679056e4851ceadf5a5e8bf6
@@ -103,7 +98,8 @@ parts:
     - -Dmanpage-build=disabled
     override-pull: |
       craftctl default
-      patch -p1 -i ../../local/src/patches/mpv-hwdec-enable.patch
+      patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-fixed-runtime-dir.patch"
+      patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-hwdec-enable.patch"
     build-packages:
     - patch
     - pkg-config
