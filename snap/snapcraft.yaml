@@ -28,6 +28,12 @@ apps:
     - opengl
     - removable-media
     - wayland
+  ffmpeg:
+    command: bin/ffmpeg
+    plugs:
+    - home
+    - network
+    - removable-media
   yt-dlp:
     command-chain:
     - wrapper
@@ -43,7 +49,7 @@ apps:
 environment:
   HOME: $SNAP_USER_COMMON
   PATH: $SNAP/bin:$PATH
-  LD_LIBRARY_PATH: $SNAP/gui-lib/usr/lib:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio:$SNAP/lib
+  LD_LIBRARY_PATH: $SNAP/gui-lib/usr/lib:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio:$SNAP/libavcodec:$SNAP/lib
   XKB_CONFIG_ROOT: $SNAP/gui-lib/usr/share/X11/xkb
   __EGL_VENDOR_LIBRARY_DIRS: $SNAP/gui-lib/usr/share/glvnd/egl_vendor.d
   LIBGL_DRIVERS_PATH: $SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/dri
@@ -58,6 +64,10 @@ plugs:
     interface: content
     default-provider: gnome-42-2204
     target: $SNAP/gui-lib
+  libavcodec58-core22:
+    interface: content
+    default-provider: libavcodec58-core22
+    target: $SNAP/libavcodec
 
 layout:
   /usr/share/font1:
@@ -77,6 +87,34 @@ parts:
     build-packages:
     - python3-pip
     - ninja-build
+  ffmpeg:
+    source: https://ffmpeg.org/releases/ffmpeg-4.4.2.tar.xz
+    source-checksum: sha256/af419a7f88adbc56c758ab19b4c708afbcae15ef09606b82b855291f6a6faa93
+    source-type: tar
+    build-packages:
+    - make
+    - nasm
+    - libgnutls28-dev
+    plugin: autotools
+    autotools-configure-parameters:
+    - --toolchain=hardened
+    - --disable-debug
+    - --enable-stripping
+    - --prefix=/
+    - --enable-shared
+    - --disable-static
+    - --enable-gpl
+    - --enable-gnutls
+    - --disable-avdevice
+    - --disable-swresample
+    - --disable-postproc
+    - --disable-ffprobe
+    - --disable-manpages
+    prime:
+    - bin
+    - lib/libavfilter.*
+    - lib/libavformat.*
+    - lib/libswscale.*
   mpv:
     after:
     - local
@@ -118,67 +156,15 @@ parts:
     - libva-dev
     - liblua5.2-dev
     stage-packages:
-    - libavfilter7
+    - libass9
     - liblua5.2-0
     organize:
       etc/: share/  # hide etc/
       '**/lib*.so*': lib/
     prime:
-    - -share
-    - -usr
-    # subdirs:
-    - -lib/libpixbufloader*
-    - -lib/libmfx_*
-    - -lib/libmfx-*
-    - -lib/libmfxhw*
-    - -lib/libvdpau_*
-    # library linter:
-    - -lib/libdeflate*
-    - -lib/libjbig*
-    - -lib/libflite_cmu_grapheme*
-    - -lib/libflite_cmu_indic*
-    - -lib/libflite_cmu_time*
-    - -lib/libicu*
-    - -lib/liblua*-c++*
-    - -lib/libsphinxad*
-    - -lib/libtiff*
-    - -lib/libtheora*
-    - -lib/libzvbi-chains*
-    # comm -12 <(find /snap/gnome-42-2204/current/ ! -type d -printf '%f\n' | sort -u) <(find /snap/mpv-wayland/current/ ! -type d -printf '%f\n' | sort -u)
-    - -lib/libFLAC*
-    - -lib/libX*
-    - -lib/libasound*
-    - -lib/libasyncns*
-    - -lib/libcairo*
-    - -lib/libdatrie*
-    - -lib/libfontconfig*
-    - -lib/libfribidi*
-    - -lib/libgdk*
-    - -lib/libgomp*
-    - -lib/libgraphite*
-    - -lib/libharfbuzz*
-    - -lib/libjpeg*
-    - -lib/libmp3lame*
-    - -lib/libmpg123*
-    - -lib/libogg*
-    - -lib/libopenjp*
-    - -lib/libopus*
-    - -lib/libpango*
-    - -lib/libpixman*
-    - -lib/libpulse*
-    - -lib/libquadmath*
-    - -lib/librsvg*
-    - -lib/libsamplerate*
-    - -lib/libsndfile*
-    - -lib/libspeex*
-    - -lib/libthai*
-    - -lib/libtwolame*
-    - -lib/libva*
-    - -lib/libvorbis*
-    - -lib/libvpx*
-    - -lib/libwebp*
-    - -lib/libxcb*
-    - -lib/libxml2*
+    - bin
+    - lib/libass.*
+    - lib/liblua5.2.so.*
   yt-dlp:
     source: https://github.com/yt-dlp/yt-dlp.git
     source-commit: 6014355c6142f68e20c8374e3787e5b5820f19e2
