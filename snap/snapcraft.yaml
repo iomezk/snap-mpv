@@ -68,17 +68,34 @@ parts:
     - -patches/
   meson-deps:
     plugin: nil
-    override-build: |
-      pip install meson
     build-packages:
     - python3-pip
     - ninja-build
+    override-build: |
+      pip install meson
   mpv:
     after:
     - meson-deps
     source: https://github.com/mpv-player/mpv/archive/v0.36.0.tar.gz
     source-checksum: sha256/29abc44f8ebee013bb2f9fe14d80b30db19b534c679056e4851ceadf5a5e8bf6
     source-type: tar
+    build-packages:
+    - patch
+    - pkg-config
+    - libavfilter-dev
+    - libass-dev
+    - libpulse-dev
+    - libdrm-dev
+    - libwayland-dev
+    - wayland-protocols
+    - libxkbcommon-dev
+    - libegl1-mesa-dev
+    - libva-dev
+    - liblua5.2-dev
+    override-pull: |
+      craftctl default
+      patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-fixed-runtime-dir.patch"
+      patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-hwdec-enable.patch"
     plugin: meson
     meson-parameters:
     - --buildtype=release
@@ -96,23 +113,6 @@ parts:
     - -Dvaapi-x11=disabled
     - -Dx11=disabled
     - -Dmanpage-build=disabled
-    override-pull: |
-      craftctl default
-      patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-fixed-runtime-dir.patch"
-      patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-hwdec-enable.patch"
-    build-packages:
-    - patch
-    - pkg-config
-    - libavfilter-dev
-    - libass-dev
-    - libpulse-dev
-    - libdrm-dev
-    - libwayland-dev
-    - wayland-protocols
-    - libxkbcommon-dev
-    - libegl1-mesa-dev
-    - libva-dev
-    - liblua5.2-dev
     stage-packages:
     - libavfilter7
     - liblua5.2-0
