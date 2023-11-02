@@ -80,22 +80,17 @@ parts:
     source-checksum: sha256/29abc44f8ebee013bb2f9fe14d80b30db19b534c679056e4851ceadf5a5e8bf6
     source-type: tar
     build-packages:
-    - patch
-    - pkg-config
     - libavfilter-dev
     - libass-dev
-    - libpulse-dev
-    - libdrm-dev
-    - libwayland-dev
-    - wayland-protocols
-    - libxkbcommon-dev
-    - libegl1-mesa-dev
-    - libva-dev
     - liblua5.2-dev
     override-pull: |
       craftctl default
       patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-fixed-runtime-dir.patch"
       patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-hwdec-enable.patch"
+    build-environment:
+    - PATH: /snap/gnome-42-2204-sdk/current/usr/bin${PATH:+:$PATH}
+    - LD_LIBRARY_PATH: /snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    - PKG_CONFIG_PATH: /snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
     plugin: meson
     meson-parameters:
     - --buildtype=release
@@ -107,6 +102,7 @@ parts:
     - -Ddrm=enabled
     - -Degl=enabled
     - -Degl-wayland=enabled
+    - -Djpeg=disabled  # libjpeg-turbo package bug 2042483
     - -Dwayland=enabled
     - -Dvaapi-drm=disabled
     - -Dvaapi-wayland=enabled
