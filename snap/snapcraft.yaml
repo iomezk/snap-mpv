@@ -79,6 +79,8 @@ parts:
     source: https://github.com/mpv-player/mpv/archive/v0.36.0.tar.gz
     source-checksum: sha256/29abc44f8ebee013bb2f9fe14d80b30db19b534c679056e4851ceadf5a5e8bf6
     source-type: tar
+    build-snaps:
+    - gnome-42-2204-sdk
     build-packages:
     - libavfilter-dev
     - libass-dev
