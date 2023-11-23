@@ -8,7 +8,7 @@
  #include <stdbool.h>
  #include <math.h>
  #include <assert.h>
-@@ -426,6 +427,13 @@
+@@ -419,6 +420,13 @@
  
  int mpv_main(int argc, char *argv[])
  {
@@ -19,6 +19,6 @@
 +        setenv("XDG_RUNTIME_DIR", runtime_dir, 1);
 +    }
 +
+     mp_thread_set_name("mpv");
      struct MPContext *mpctx = mp_create();
      if (!mpctx)
-         return 1;

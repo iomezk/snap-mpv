@@ -1,5 +1,4 @@
 name: mpv-wayland
-version: '0.36.0-0'
 summary: mpv mediaplayer snap with a main focus on Wayland support
 description: |
   Configuration files can be placed under /home/$USER/snap/mpv-wayland/common/.config/mpv/ directory.  
@@ -59,6 +58,7 @@ layout:
   /usr/share/font1:
     symlink: $SNAP/gui-lib/usr/share/fonts
 
+adopt-info: mpv
 parts:
   local:
     source: snap/local/
@@ -76,8 +76,9 @@ parts:
   mpv:
     after:
     - meson-deps
-    source: https://github.com/mpv-player/mpv/archive/v0.36.0.tar.gz
-    source-checksum: sha256/29abc44f8ebee013bb2f9fe14d80b30db19b534c679056e4851ceadf5a5e8bf6
+    - libplacebo
+    source: https://github.com/mpv-player/mpv/archive/v0.37.0.tar.gz
+    source-checksum: sha256/1d2d4adbaf048a2fa6ee134575032c4b2dad9a7efafd5b3e69b88db935afaddf
     source-type: tar
     build-snaps:
     - gnome-42-2204-sdk
@@ -85,11 +86,14 @@ parts:
     - libavfilter-dev
     - libass-dev
     - liblua5.2-dev
+    - libjpeg-turbo8-dev  # libjpeg-turbo package bug 2042483
+    - jq
     override-pull: |
       craftctl default
       patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-fixed-runtime-dir.patch"
       patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-hwdec-enable.patch"
-    build-environment:
+    build-environment: &buildenv
+    - LDFLAGS: -lstdc++
     - PATH: /snap/gnome-42-2204-sdk/current/usr/bin${PATH:+:$PATH}
     - LD_LIBRARY_PATH: /snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
     - PKG_CONFIG_PATH: /snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
@@ -104,13 +108,15 @@ parts:
     - -Ddrm=enabled
     - -Degl=enabled
     - -Degl-wayland=enabled
-    - -Djpeg=disabled  # libjpeg-turbo package bug 2042483
     - -Dwayland=enabled
     - -Dvaapi-drm=disabled
     - -Dvaapi-wayland=enabled
     - -Dvaapi-x11=disabled
     - -Dx11=disabled
     - -Dmanpage-build=disabled
+    override-build: |
+      craftctl default
+      craftctl set "version=$(jq -r .version meson-info/intro-projectinfo.json)"
     stage-packages:
     - libavfilter7
     - liblua5.2-0
@@ -173,9 +179,24 @@ parts:
     - -lib/libwebp*
     - -lib/libxcb*
     - -lib/libxml2*
+  libplacebo:
+    after:
+    - meson-deps
+    source: https://code.videolan.org/videolan/libplacebo.git
+    source-commit: 2805a0d01c029084ab36bf5d0e3c8742012a0b27  # v6.338.1
+    source-type: git
+    source-depth: 1
+    build-environment: *buildenv
+    plugin: meson
+    meson-parameters:
+    - --buildtype=release
+    - --prefix=/usr
+    - -Ddefault_library=static
+    prime:
+    - -*
   yt-dlp:
     source: https://github.com/yt-dlp/yt-dlp.git
-    source-commit: eda0e415d26eb084e570cf5372d38ee1f616b70f
+    source-commit: a0b19d319a6ce8b7059318fa17a34b144fde1785
     source-type: git
     source-depth: 1
     plugin: python
