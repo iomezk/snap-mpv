@@ -37,6 +37,8 @@ apps:
 
 environment:
   HOME: $SNAP_USER_COMMON
+  XDG_CONFIG_HOME: $SNAP_USER_COMMON/.config
+  XDG_CACHE_HOME: /
   PATH: $SNAP/bin:$PATH
   LD_LIBRARY_PATH: $SNAP/gui-lib/usr/lib:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio:$SNAP/lib
   XKB_CONFIG_ROOT: $SNAP/gui-lib/usr/share/X11/xkb
