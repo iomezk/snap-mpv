@@ -94,6 +94,7 @@ parts:
       craftctl default
       patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-fixed-runtime-dir.patch"
       patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-hwdec-enable.patch"
+      patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/mpv-no-global-conf.patch"
     build-environment: &buildenv
     - LDFLAGS: -lstdc++
     - PATH: /snap/gnome-42-2204-sdk/current/usr/bin${PATH:+:$PATH}

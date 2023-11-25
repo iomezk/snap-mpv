@@ -1,0 +1,10 @@
+--- a/options/path.c
++++ b/options/path.c
+@@ -62,7 +62,6 @@
+     "old_home",
+     "osxbundle",
+     "exe_dir",
+-    "global",
+ };
+ 
+ // Return a platform specific path using a path type as defined in osdep/path.h.
