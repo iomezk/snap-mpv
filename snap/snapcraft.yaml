@@ -54,7 +54,11 @@ plugs:
   gnome-42-2204:
     interface: content
     default-provider: gnome-42-2204
-    target: $SNAP/gui-lib
+    target: gui-lib
+  ffmpeg-2204:
+    interface: content
+    default-provider: ffmpeg-2204
+    target: ffmpeg-platform
 
 layout:
   /usr/share/font1:
