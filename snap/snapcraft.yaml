@@ -189,6 +189,8 @@ parts:
     source-commit: 2805a0d01c029084ab36bf5d0e3c8742012a0b27  # v6.338.1
     source-type: git
     source-depth: 1
+    build-packages:
+    - g++
     build-environment: *buildenv
     plugin: meson
     meson-parameters:
