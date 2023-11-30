@@ -40,7 +40,7 @@ environment:
   XDG_CONFIG_HOME: $SNAP_USER_COMMON/.config
   XDG_CACHE_HOME: /
   PATH: $SNAP/bin:$PATH
-  LD_LIBRARY_PATH: $SNAP/gui-lib/usr/lib:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio:$SNAP/lib
+  LD_LIBRARY_PATH: $SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET:$SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio:$SNAP/gui-lib/usr/lib:$SNAP/ffmpeg-platform/usr/lib/$CRAFT_ARCH_TRIPLET:$SNAP/lib
   XKB_CONFIG_ROOT: $SNAP/gui-lib/usr/share/X11/xkb
   __EGL_VENDOR_LIBRARY_DIRS: $SNAP/gui-lib/usr/share/glvnd/egl_vendor.d
   LIBGL_DRIVERS_PATH: $SNAP/gui-lib/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/dri
@@ -88,9 +88,9 @@ parts:
     source-type: tar
     build-snaps:
     - gnome-42-2204-sdk
+    - ffmpeg-2204-sdk
     build-packages:
-    - libavfilter-dev
-    - libass-dev
+    - libass-dev  # ffmpeg-2204-sdk doesn't contain it
     - liblua5.2-dev
     - libjpeg-turbo8-dev  # libjpeg-turbo package bug 2042483
     - jq
@@ -102,8 +102,8 @@ parts:
     build-environment: &buildenv
     - LDFLAGS: -lstdc++
     - PATH: /snap/gnome-42-2204-sdk/current/usr/bin${PATH:+:$PATH}
-    - LD_LIBRARY_PATH: /snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pulseaudio${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-    - PKG_CONFIG_PATH: /snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
+    - LD_LIBRARY_PATH: /snap/gnome-42-2204-sdk/current/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET:/snap/gnome-42-2204-sdk/current/usr/lib:/snap/gnome-42-2204-sdk/current/usr/lib/vala-current:/snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pulseaudio:/snap/ffmpeg-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    - PKG_CONFIG_PATH: /snap/gnome-42-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/lib/pkgconfig:/snap/gnome-42-2204-sdk/current/usr/share/pkgconfig:/snap/ffmpeg-2204-sdk/current/usr/lib/$CRAFT_ARCH_TRIPLET/pkgconfig${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
     plugin: meson
     meson-parameters:
     - --buildtype=release
@@ -125,67 +125,13 @@ parts:
       craftctl default
       craftctl set "version=$(jq -r .version meson-info/intro-projectinfo.json)"
     stage-packages:
-    - libavfilter7
     - liblua5.2-0
     organize:
       etc/: share/  # hide etc/
       '**/lib*.so*': lib/
     prime:
-    - -share
-    - -usr
-    # subdirs:
-    - -lib/libpixbufloader*
-    - -lib/libmfx_*
-    - -lib/libmfx-*
-    - -lib/libmfxhw*
-    - -lib/libvdpau_*
-    # library linter:
-    - -lib/libdeflate*
-    - -lib/libjbig*
-    - -lib/libflite_cmu_grapheme*
-    - -lib/libflite_cmu_indic*
-    - -lib/libflite_cmu_time*
-    - -lib/libicu*
-    - -lib/liblua*-c++*
-    - -lib/libsphinxad*
-    - -lib/libtiff*
-    - -lib/libtheora*
-    - -lib/libzvbi-chains*
-    # comm -12 <(find /snap/gnome-42-2204/current/ ! -type d -printf '%f\n' | sort -u) <(find /snap/mpv-wayland/current/ ! -type d -printf '%f\n' | sort -u)
-    - -lib/libFLAC*
-    - -lib/libX*
-    - -lib/libasound*
-    - -lib/libasyncns*
-    - -lib/libcairo*
-    - -lib/libdatrie*
-    - -lib/libfontconfig*
-    - -lib/libfribidi*
-    - -lib/libgdk*
-    - -lib/libgomp*
-    - -lib/libgraphite*
-    - -lib/libharfbuzz*
-    - -lib/libjpeg*
-    - -lib/libmp3lame*
-    - -lib/libmpg123*
-    - -lib/libogg*
-    - -lib/libopenjp*
-    - -lib/libopus*
-    - -lib/libpango*
-    - -lib/libpixman*
-    - -lib/libpulse*
-    - -lib/libquadmath*
-    - -lib/librsvg*
-    - -lib/libsamplerate*
-    - -lib/libsndfile*
-    - -lib/libspeex*
-    - -lib/libthai*
-    - -lib/libtwolame*
-    - -lib/libva*
-    - -lib/libvorbis*
-    - -lib/libvpx*
-    - -lib/libwebp*
-    - -lib/libxcb*
-    - -lib/libxml2*
+    - bin
+    - lib/liblua5.2.so*
   libplacebo:
     after:
     - meson-deps
