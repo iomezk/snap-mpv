@@ -200,6 +200,7 @@ parts:
     meson-parameters:
     - --buildtype=release
     - --prefix=/usr
+    - --libdir=lib
     - -Ddefault_library=static
     prime:
     - -*
