@@ -159,10 +159,10 @@ parts:
     plugin: python
     override-build: |
       craftctl default
-      cd "$CRAFT_PART_INSTALL"/lib/python*/site-packages
-      IFS=$(printf '\t') find yt_dlp -name '*.pyc' | sed -r \
-       's/.*/\0\t\0/; s#/__pycache__/#/#; s/\.cpython-[0-9]+\.pyc\t/.pyc\t/' | while read -r D S; do
-        mv "$S" "$D"
+      cd "$CRAFT_PART_INSTALL"/lib/python*/site-packages/yt_dlp
+      IFS= find -name '*.cpython-*.pyc' | while read -r SRC; do
+        NAME=${SRC##*/}
+        mv "$SRC" "${SRC%__pycache__/*}${NAME%.cpython-*}.pyc"
       done
     prime:
     - bin/yt-dlp
