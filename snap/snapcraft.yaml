@@ -121,6 +121,7 @@ parts:
     - -Dvaapi-wayland=enabled
     - -Dvaapi-x11=disabled
     - -Dx11=disabled
+    - -Dcuda-hwaccel=disabled
     - -Dmanpage-build=disabled
     override-build: |
       craftctl default
