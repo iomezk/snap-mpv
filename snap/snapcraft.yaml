@@ -155,6 +155,10 @@ parts:
     source-commit: a0b19d319a6ce8b7059318fa17a34b144fde1785
     source-type: git
     source-depth: 1
+    build-environment: *buildenv
+    override-pull: |
+      craftctl default
+      patch -p1 -i "$CRAFT_PROJECT_DIR/snap/local/patches/ytdlp-nocache.patch"
     plugin: python
     override-build: |
       craftctl default

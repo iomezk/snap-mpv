@@ -1,0 +1,11 @@
+--- a/yt_dlp/options.py
++++ b/yt_dlp/options.py
+@@ -1460,7 +1460,7 @@
+         action='store_const', const=None, dest='cookiesfrombrowser',
+         help='Do not load cookies from browser (default)')
+     filesystem.add_option(
+-        '--cache-dir', dest='cachedir', default=None, metavar='DIR',
++        '--cache-dir', dest='cachedir', default=False, metavar='DIR',
+         help=(
+             'Location in the filesystem where yt-dlp can store some downloaded information '
+             '(such as client ids and signatures) permanently. By default ${XDG_CACHE_HOME}/yt-dlp'))
