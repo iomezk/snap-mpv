@@ -128,7 +128,6 @@ parts:
     stage-packages:
     - liblua5.2-0
     organize:
-      etc/: share/  # hide etc/
       '**/lib*.so*': lib/
     prime:
     - bin
