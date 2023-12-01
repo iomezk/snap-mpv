@@ -152,7 +152,7 @@ parts:
     - -*
   yt-dlp:
     source: https://github.com/yt-dlp/yt-dlp.git
-    source-commit: a0b19d319a6ce8b7059318fa17a34b144fde1785
+    source-commit: 6a9c7a2b52655bacfa7ab2da24fd0d14a6fff495
     source-type: git
     source-depth: 1
     build-environment: *buildenv
